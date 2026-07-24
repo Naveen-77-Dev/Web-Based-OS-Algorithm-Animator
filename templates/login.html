@@ -1,0 +1,119 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">OS Algorithm Visualizer</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html" class="active">Login</a>
+            <a href="register.html">Register</a>
+            <a href="contactbl.html">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Login</h2>
+                <form class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p class="auth-link">Don't have an account? <a href="register.html">Register here</a></p>
+                    <center><p class="forgot-pass">Forgot Password? <a href="reset.html">Click Here to Reset</a></p></center>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+
+    <script src="auth.js"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <style>.alert {
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        color: green;
+    }
+    
+    /* Error messages in red */
+    .alert-danger {
+        color: red;
+        
+    }</style>
+    <nav class="navbar">
+        <div class="navbar-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+          <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/login" class="active">Login</a>
+            <a href="/register">Register</a>
+            <a href="/contactbl">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container" >
+            <div class="auth-card">
+                <h2>Login</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form class="auth-form" method="POST" action="/login">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p class="auth-link">Don't have an account? <a href="/register">Register here</a></p>
+                    <center><p class="forgot-pass">Forgot Password? <a href="/reset">Click Here to Reset</a></p></center>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+</body>
+</html>

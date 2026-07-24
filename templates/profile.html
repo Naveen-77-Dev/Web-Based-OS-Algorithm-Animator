@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 1.5rem;
+        }
+        .profile-form {
+            margin-top: 2rem;
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            flex: 1;
+        }
+        .profile-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .btn-cancel, .btn-save {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background: #f1f1f1;
+            border: 1px solid #ddd;
+        }
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .password-fields {
+            display: none;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .btn-change-password {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+            <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="cpu.html">CPU Scheduling</a>
+            <a href="disk.html">Disk Scheduling</a>
+            <a href="page.html">Page Replacement</a>
+            <a href="contactal.html">Contact</a>
+            <a href="#" onclick="handleLogout()" class="logout-nav">Logout</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">{{ user[1][0]|upper }}</div>
+                <div class="profile-info-header">
+                    <h2>{{ user[1] }}</h2>
+                    <p>{{ user[2] }}</p>
+                    <p>Member since {{ user[7].strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="profile-form">
+                <h3>Edit Profile</h3>
+                <form method="POST" action="/profile/update" id="profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" value="{{ user[1] }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" value="{{ user[2] }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mobile">Mobile Number</label>
+                            <input type="text" id="mobile" name="mobile" value="{{ user[4] or '' }}">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn-change-password" id="change-password-btn">Change Password</button>
+                    
+                    <div class="password-fields" id="password-fields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="current-password">Current Password</label>
+                                <input type="password" id="current-password" name="current_password" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                <input type="password" id="new-password" name="new_password" placeholder="Enter new password">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button type="button" class="btn-cancel" onclick="window.location.href='/home'">Cancel</button>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle password fields visibility
+        document.getElementById('change-password-btn').addEventListener('click', function() {
+            const passwordFields = document.getElementById('password-fields');
+            if (passwordFields.style.display === 'block') {
+                passwordFields.style.display = 'none';
+                this.textContent = 'Change Password';
+            } else {
+                passwordFields.style.display = 'block';
+                this.textContent = 'Hide Password Fields';
+            }
+        });
+
+        // Handle form submission with validation
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const passwordFieldsVisible = document.getElementById('password-fields').style.display === 'block';
+            
+            // If password fields are visible but not both filled
+            if (passwordFieldsVisible && (currentPassword || newPassword)) {
+                if (!currentPassword || !newPassword) {
+                    e.preventDefault();
+                    alert('Please fill both current and new password fields to change your password.');
+                }
+            }
+        });
+
+        // Handle logout
+        function handleLogout() {
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Logout failed');
+                    alert('Logout failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error during logout:', error);
+                alert('An error occurred during logout.');
+            });
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+</body>
+</html>

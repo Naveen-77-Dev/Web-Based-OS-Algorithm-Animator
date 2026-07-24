@@ -1,0 +1,163 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">OS Algorithm Visualizer</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html" class="active">Register</a>
+            <a href="contact.html">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Register</h2>
+                <form class="auth-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                    </div>
+                    
+                    <button type="submit">Register</button>
+                    <p class="auth-link">Already have an account? <a href="login.html">Login here</a></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+
+            if (password !== confirmPassword) {
+                errorElement.textContent='Passwords do not match!';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // Store user data in localStorage
+            localStorage.setItem("user_name", name);
+            localStorage.setItem("user_email", email);
+            localStorage.setItem("user_password", password);
+            window.location.href = "newdetails.html";
+        }
+    </script>
+    
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .error { color: red; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+          <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html" class="active">Register</a>
+            <a href="contactbl.html">Contact</a>
+            
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Register</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form class="auth-form" method="POST" action="/register">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+                        <div id="password-error" class="error"></div>
+                    </div>
+                    
+                    <button type="submit">Register</button>
+                    <p class="auth-link">Already have an account? <a href="/login">Login here</a></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById('confirm-password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const errorElement = document.getElementById('password-error');
+            
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match!';
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>
