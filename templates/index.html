@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+          <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
+            <a href="contactbl.html">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>Operating System Algorithm Visualizer</h1>
+            <p>Interactive visualization of CPU Scheduling, Disk Scheduling, and Page Replacement Algorithms</p>
+        </section>
+
+        <!-- Added OS Scheduling Information Section -->
+        <section class="os-info">
+            <h1>What Is OS?</h1>
+            <p>An Operating System (OS) is system software that manages hardware and software resources on a computer. It provides a user interface and serves as a bridge between the user and the computer hardware. The OS manages various tasks such as memory management, process management, device management, file management, and security.
+            </p>
+            <h3><i>Key functions of an OS:</i></h3>
+        <ul>
+            <li>Process Management</li>
+            <li>Memory Management</li>
+            <li>Device Management</li>
+            <li>File Management</li>
+            <li>Security & Access conttrols Management</li>
+            <li>User Interface Management</li>
+        </ul>
+            <h1>Understanding OS Scheduling Problems</h1>
+            <p>Operating System scheduling involves managing resources like the CPU, Disk, and Page Replacement. CPU scheduling allocates processor time to processes efficiently, while disk scheduling optimizes I/O operations to reduce access times. Page replacement ensures that memory is used effectively by deciding which pages to swap in and out of physical memory. These processes aim to improve system performance, fairness, and resource utilization.</p>
+            <ul>
+                <li><b><i>CPU Scheduling :</i></b> Allocates processor time to processes, ensuring efficient multitasking and minimizing issues like starvation and context-switching overhead.
+                </li>
+                <li><b><i>Disk Scheduling :</i></b> Optimizes the order of disk I/O operations to reduce seek time and improve system throughput.</li>
+              <li><b><i>Page Replacement :</i></b> Manages memory by deciding which pages to swap in and out of physical memory to reduce page faults and optimize memory usage.</li>
+            </ul>
+            
+            <h1>Why is OS Scheduling Important?</h1>
+            <p>OS scheduling is important because it ensures efficient use of system resources, such as the CPU, memory, and disk, by determining the order in which tasks are executed. Proper scheduling improves system performance, responsiveness, and fairness, allowing multiple processes to run smoothly without resource conflicts or inefficiencies. It helps manage workloads, prevent issues like starvation and deadlocks, and ensures that the system remains stable and responsive to user needs.</p>
+            </ul>
+            <br>
+            
+
+        </br>
+            <h1>The Main Algorithms are:</h1>
+        </section>
+
+        <section class="algorithms">
+            
+            <div class="algorithm-card" onclick="checkAuthBeforeRedirect('cpu.html')">
+                <img src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?auto=format&fit=crop&w=600" alt="CPU">
+                <h2>CPU Scheduling</h2>
+                <p>Visualize FCFS, SJF, Round Robin, and Priority Scheduling</p>
+            </div>
+
+            <div class="algorithm-card" onclick="checkAuthBeforeRedirect('disk.html')">
+                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=600" alt="Disk">
+                <h2>Disk Scheduling</h2>
+                <p>Explore FCFS, SCAN, C-SCAN, and LOOK algorithms</p>
+            </div>
+
+            <div class="algorithm-card" onclick="checkAuthBeforeRedirect('page.html')">
+                <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=600" alt="Page">
+                <h2>Page Replacement</h2>
+                <p>Understand FIFO, LRU, and Optimal replacement</p>
+            </div>
+        </section><br></br>
+        <button class="get-started-btn" onclick="window.location.href='/login';">Get Started -></button><br></br><br><br><br></br></br></br>
+
+        <!-- Added About Us Section -->
+      
+
+    </main>
+
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script>
+        function checkAuthBeforeRedirect(url) {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                alert('Please login to view visualizations');
+                window.location.href = 'login.html';
+            } else {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+<div class="footer1">
+    <div class="footer-container">
+        <!-- Logo Section
+        <div class="footer-logo">
+            <img src="img\pic (5).jpg" alt="Your Logo">
+        </div> -->
+
+        <!-- Footer Links -->
+        <div class="footer-links" id="footer-links">
+            <div class="footer-column">
+                <h3>About Us</h3>
+                <p>We Offer Interactive Visualizations Of OS Scheduling <br>Algorithms To Enhance Learning And Understanding.</p>
+            </div><br>
+            <div class="footer-column">
+                <h3>Algorithms</h3>
+                <ul>
+                    <li><a href="cpu.html">CPU Scheduling Algorithms</a></li>
+                    <li><a href="disk.html">Disk Scheduling Algorithms</a></li>
+                    <li><a href="page.html">Page Replacement Algorithms</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <p>Email: support@osanimater.com</p>
+                <p>Phone: +91 1234567890</p>
+            </div>
+        </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+  <footer class="footer">
+    <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+</footer>
+</html>

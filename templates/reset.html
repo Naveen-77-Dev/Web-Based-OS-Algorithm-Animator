@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        #newPasswordSection { display: none; }
+        .error { color: red; margin-top: 5px; }
+        .success { color: green; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+            <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="/register">Register</a>
+            <a href="/contactbl">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Reset your Password</h2>
+                <div id="message"></div>
+                
+                <form id="resetForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                        <div id="emailError" class="error"></div>
+                    </div>
+                    
+                    <div id="verificationSection">
+                        <div class="form-group">
+                            <label for="security_question">Security Question</label>
+                            <select id="security_question" name="security_question" required>
+                                <option value="">-- Select a Question --</option>
+                                <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                                <option value="What is the name of the city where you were born?">What is the name of the city where you were born?</option>
+                                <option value="What was the model of your first car?">What was the model of your first car?</option>
+                                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                <option value="What was the name of your first school?">What was the name of your first school?</option>
+                                <option value="What was your First Crush Name?">What was your First Crush Name?</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="security_answer">Your Answer</label>
+                            <input type="text" id="security_answer" name="security_answer" required>
+                            <div id="securityError" class="error"></div>
+                        </div>
+                    </div>
+
+                    <div id="newPasswordSection">
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" minlength="8" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" minlength="8" required>
+                            <div id="passwordError" class="error"></div>
+                        </div>
+                    </div>
+<br>
+                    <button type="button" id="submitBtn">Verify</button><br>
+                  <center>  <p class="auth-link">Don't have an account? <a href="/register">Register here</a></p>
+                    <p class="rememberpass">Remember Password? <a href="/login">Login here</a></p></center>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('resetForm');
+            const email = document.getElementById('email');
+            const securityQuestion = document.getElementById('security_question');
+            const securityAnswer = document.getElementById('security_answer');
+            const newPasswordSection = document.getElementById('newPasswordSection');
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+
+            let isVerified = false;
+
+            submitBtn.addEventListener('click', async function() {
+                clearErrors();
+                
+                if (!isVerified) {
+                    // Verification phase
+                    if (!email.value || !securityQuestion.value || !securityAnswer.value) {
+                        showError('All fields are required', 'securityError');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/reset', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                email: email.value,
+                                security_question: securityQuestion.value,
+                                security_answer: securityAnswer.value
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            isVerified = true;
+                            newPasswordSection.style.display = 'block';
+                            email.readOnly = true;
+                            securityQuestion.disabled = true;
+                            securityAnswer.readOnly = true;
+                            submitBtn.textContent = 'Reset Password';
+                            showMessage(data.message, 'success');
+                        } else {
+                            showError(data.message, 'securityError');
+                        }
+                    } catch (error) {
+                        showError('Network error. Please try again.', 'securityError');
+                        console.error('Error:', error);
+                    }
+                } else {
+                    // Password reset phase
+                    if (newPassword.value !== confirmPassword.value) {
+                        showError('Passwords do not match', 'passwordError');
+                        return;
+                    }
+
+                    if (newPassword.value.length < 8) {
+                        showError('Password must be at least 8 characters', 'passwordError');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/reset', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                email: email.value,
+                                new_password: newPassword.value,
+                                confirm_password: confirmPassword.value
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showMessage(data.message + ' Redirecting to login...', 'success');
+                            setTimeout(() => {
+                                window.location.href = '/login';
+                            }, 2000);
+                        } else {
+                            showError(data.message, 'passwordError');
+                        }
+                    } catch (error) {
+                        showError('Network error. Please try again.', 'passwordError');
+                        console.error('Error:', error);
+                    }
+                }
+            });
+
+            function clearErrors() {
+                document.querySelectorAll('.error').forEach(el => el.textContent = '');
+                messageDiv.textContent = '';
+                messageDiv.className = '';
+            }
+
+            function showError(message, elementId) {
+                const element = document.getElementById(elementId);
+                if (element) element.textContent = message;
+            }
+
+            function showMessage(message, type) {
+                messageDiv.textContent = message;
+                messageDiv.className = type;
+            }
+        });
+    </script>
+</body>
+</html>

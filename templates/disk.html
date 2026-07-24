@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disk Scheduling - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <style>
+        /* Profile Button Styles */
+        .profile-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 1rem;
+        }
+        
+        .profile-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: orangered;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-button:hover {
+            transform: scale(1.1);
+            background: rgba(200, 90, 0, 0.996);
+        }
+        
+        .profile-text {
+            font-size: 0.7rem;
+            margin-top: 0.3rem;
+            color: white;
+            text-align: center;
+        }
+
+        /* Visualization Section Styles */
+        .visualization-section {
+            position: relative;
+            overflow-y: auto;
+            max-height: 100vh;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #visualization-canvas {
+            display: block;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #ddd;
+        }
+
+        /* Solution Steps Styles */
+        .steps-container {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 4px;
+            align-items: center;
+        }
+
+        .step-number {
+            background-color: #333;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            flex-grow: 1;
+        }
+
+        /* Step Type Colors */
+        .step.info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+
+        .step.execution {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .step.completion {
+            background-color: #f3e5f5;
+            border-left: 4px solid #9C27B0;
+        }
+
+        .step.arrival {
+            background-color: #fff3e0;
+            border-left: 4px solid #FF9800;
+        }
+
+        .step.preemption {
+            background-color: #fffde7;
+            border-left: 4px solid #FFC107;
+        }
+
+        .step.idle {
+            background-color: #f5f5f5;
+            border-left: 4px solid #9E9E9E;
+        }
+
+        /* Status Container Styles */
+        .status-container {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .status-container.info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+
+        .status-container.execution {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .status-container.idle {
+            background-color: #f5f5f5;
+            border-left: 4px solid #9E9E9E;
+        }
+
+        /* Animation Controls */
+        .animation-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control input {
+            width: 150px;
+        }
+
+        .animation-controls button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2196F3;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .animation-controls button:hover {
+            background-color: #0b7dda;
+        }
+
+        /* Request Points */
+        .request-point {
+            position: absolute;
+            background-color: #FF9800;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .request-label {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            transform: translate(-50%, 0);
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* New Status Block Styles */
+        .status-container {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .status-container h3 {
+            margin-top: 0;
+            color: #2E7D32;
+        }
+        
+        .status-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .status-info p {
+            margin: 5px 0;
+        }
+        
+        .results-container {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .results-container h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .results-table th, .results-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .results-table th {
+            background-color: #333;
+            color: white;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .summary p {
+            margin: 5px 0;
+            background-color: #e3f2fd;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .step-by-step-section {
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .step-by-step-section h3 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 10px;
+    }
+
+    .steps-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .step-item {
+        display: flex;
+        margin-bottom: 15px;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .step-number {
+        background-color: #4CAF50;
+        color: white;
+        font-weight: bold;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        font-size: 18px;
+    }
+
+    .step-details {
+        padding: 12px 15px;
+        flex-grow: 1;
+    }
+
+    .seek-distance {
+        display: block;
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .current-step {
+        border-left: 4px solid #2196F3;
+    }
+
+    /* Dynamic canvas sizing */
+    #visualization-canvas {
+        width: 100%;
+        background: white;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+    /* Add this to your existing CSS in the <style> section */
+.solution-steps {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.solution-steps h2 {
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.step-by-step-execution {
+    margin-top: 15px;
+}
+
+.step-by-step-execution h3 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.steps-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step-counter;
+}
+
+.step-item {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 10px;
+    counter-increment: step-counter;
+}
+
+.step-item::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #4CAF50;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.step-details {
+    background-color: #f5f5f5;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 3px solid #4CAF50;
+}
+
+.summary-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.summary-section h3 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    background-color: #e8f5e9;
+    border-radius: 4px;
+}
+
+.summary-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.summary-value {
+    color: #2E7D32;
+    font-weight: bold;
+}
+
+.current-step .step-details {
+    background-color: #e3f2fd;
+    border-left-color: #2196F3;
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+          <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+          <a href="home.html" >Home</a>
+          <a href="cpu.html">CPU Scheduling</a>
+          <a href="disk.html" class="active">Disk Scheduling</a>
+          <a href="page.html">Page Replacement</a>
+          <a href="contactal.html">Contact</a>
+          <a href="#" onclick="handleLogout()" class="logout-nav">Logout</a>
+        </div>
+      </nav>
+
+    <main>
+        <div class="algo-container">
+            <div class="algo-header">
+                <h2>Disk Scheduling Algorithms</h2>
+                <div class="algorithm-definition">
+                    <h3>What is Disk Scheduling?</h3>
+                    <p>Disk scheduling is the process of deciding the order in which disk I/O requests are serviced. The main objectives are to minimize seek time, maximize disk bandwidth, and ensure fairness.</p>
+                    
+                    <h3>Available Algorithms:</h3>
+                    <div class="algorithm-types">
+                        <h4>First Come First Serve (FCFS)</h4>
+                        <p>The simplest approach that serves requests in the order they arrive. While fair, it may result in higher seek times and disk arm movement.</p>
+                        
+                        <h4>SCAN (Elevator)</h4>
+                        <p>The disk arm moves in one direction servicing requests until it reaches the end, then reverses direction. This reduces the maximum waiting time for requests.</p>
+                        
+                        <h4>C-SCAN (Circular SCAN)</h4>
+                        <p>Similar to SCAN, but the arm only services requests in one direction. When reaching the end, it quickly returns to the beginning without servicing requests.</p>
+                        
+                        <h4>LOOK</h4>
+                        <p>An improved version of SCAN where the arm only goes as far as the last request in each direction, then reverses.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="algo-content">
+                <div class="input-section">
+                    <h3>Input Data</h3>
+                    <div class="form-group">
+                        <label for="disk-size">Disk Size (Cylinders)</label>
+                        <input type="number" id="disk-size" min="100" max="1000" value="200">
+                    </div>
+                    <div class="form-group">
+                        <label for="head-position">Initial Head Position</label>
+                        <input type="number" id="head-position" min="0" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="requests">Request Queue (comma-separated)</label>
+                        <input type="text" id="requests" placeholder="98, 183, 37, 122, 14, 124, 65, 67">
+                    </div>
+                    <div class="algo-controls">
+                        <select id="algorithm-select">
+                            <option value="fcfs">First Come First Serve (FCFS)</option>
+                            <option value="scan">SCAN (Elevator)</option>
+                            <option value="cscan">C-SCAN</option>
+                            <option value="look">LOOK</option>
+                        </select>
+                        <button onclick="runVisualization()" class="visualize-btn">Visualize</button>
+                    </div>
+                </div>
+                <div class="visualization-section">
+                    <!-- Status Block -->
+                    
+
+                    <canvas id="visualization-canvas"></canvas>
+                    <div class="animation-controls">
+                        <button id="play-pause-btn">Pause</button>
+                        <button id="reset-btn">Reset</button>
+                        <div class="speed-control">
+                            <label for="animation-speed">Speed:</label>
+                            <input type="range" id="animation-speed" min="1" max="5" value="3" step="0.5">
+                            <span id="speed-value">1.5x</span>
+                        </div>
+                    </div>
+                    <div class="status-container execution">
+                        <h3>Current Status</h3>
+                        <div class="status-info">
+                            <p><strong>Time:</strong> <span id="current-time">0</span></p>
+                            <p><strong>Current Head Position:</strong> <span id="current-position">50</span></p>
+                            <p><strong>Status:</strong> <span id="current-status">Idle</span></p>
+                        </div>
+                    </div>
+                    <!-- Results Block -->
+                    <div class="results-container">
+                        <h3>Results</h3>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Request</th>
+                                    <th>Cylinder</th>
+                                    <th>Completion Time</th>
+                                    <th>Seek Time</th>
+                                    <th>Wait Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="summary">
+                            <p><strong>Total Seek Distance:</strong> <span id="total-seek">0</span> cylinders</p>
+                            <p><strong>Average Seek Time:</strong> <span id="avg-seek">0.00</span> units</p>
+                            <p><strong>Average Wait Time:</strong> <span id="avg-wait">0.00</span> units</p>
+                        </div>
+                    </div>
+
+                    <div id="step-by-step" class="step-by-step-section"></div>
+                </div>
+            </div>
+        </div>
+        <div id="chat-widget" class="chat-widget">
+            <div class="chat-header" onclick="toggleChat()">
+                <span>💬</span>
+                <span class="help-text">Need Help?</span>
+            </div>
+            <div class="chat-body">
+                <div id="chat-messages" class="chat-messages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input-field" placeholder="Type your question..." autocomplete="off">
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        //chat js
+        let messages = [];
+        let aiContext = null;
+        let firstMessageSent = false;
+        
+        function toggleChat() {
+            const chatWidget = document.querySelector('.chat-widget');
+            chatWidget.classList.toggle('expanded');
+            
+            if (chatWidget.classList.contains('expanded') && !firstMessageSent) {
+                addMessage('bot', 'Hello! I\'m your OS and algorithms assistant. Ask me about: CPU, memory, disks, scheduling, animations, or any OS concept! 😊');
+                firstMessageSent = true;
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chat-input-field');
+            if (!input) return;
+            
+            const message = input.value.trim();
+            if (message) {
+                addMessage('user', message);
+                processUserMessage(message);
+                input.value = '';
+            }
+        }
+        
+        function processUserMessage(message) {
+            message = message.toLowerCase();
+            
+            // Goodbye response
+            if (message.match(/^(bye|goodbye|see you|quit|exit)/i)) {
+                setTimeout(() => {
+                    addMessage('bot', 'Thank you for chatting with me! If you have more OS or algorithm questions later, I\'ll be here. Have a great day! 👋');
+                }, 500);
+                return;
+            }
+            
+            // Greeting response
+            if (message.match(/^(hi|hello|hey|greetings)/i)) {
+                setTimeout(() => {
+                    addMessage('bot', 'Hello! I can explain:\n- Computer hardware (CPU, disk, memory)\n- OS concepts (scheduling, paging)\n- Algorithm animations\n- And much more! What would you like to know?');
+                }, 500);
+                return;
+            }
+            
+            // Handle definitions
+            const definitionMatch = findRelevantDefinition(message);
+            if (definitionMatch) {
+                setTimeout(() => {
+                    addMessage('bot', generateDefinition(definitionMatch));
+                    if (shouldOfferExamples(definitionMatch)) {
+                        addMessage('bot', 'Would you like examples or specific algorithms related to this?');
+                    }
+                }, 500);
+                return;
+            }
+        
+            // Algorithm explanations
+            const algorithmMatch = findRelevantAlgorithm(message);
+            if (algorithmMatch) {
+                setTimeout(() => {
+                    addMessage('bot', generateAlgorithmExplanation(algorithmMatch));
+                    addMessage('bot', 'Would you like to know how this works in animation or visualization?');
+                }, 500);
+                return;
+            }
+        
+            // Default fallback
+            setTimeout(() => {
+                addMessage('bot', 'I\'m not entirely sure about that concept yet, but I\'ll work on learning it! 😊');
+                addMessage('bot', 'I can explain:\n- Hardware: CPU, Disk, Memory\n- OS: Scheduling, Paging, File Systems\n- Algorithms: FCFS, LRU, SCAN\n- Animations: How algorithms are visualized');
+            }, 500);
+        }
+        
+        function shouldOfferExamples(definition) {
+            return ['disk', 'pages', 'memory', 'scheduling', 'animation', 'process', 'thread', 'filesystem', 'deadlock'].includes(definition);
+        }
+        
+        function findRelevantDefinition(message) {
+            const definitions = {
+                // Hardware concepts
+                'cpu': ['cpu', 'central processing unit', 'processor', 'cores', 'multicore'],
+                'disk': ['disk', 'hard disk', 'hdd', 'ssd', 'storage device', 'hard drive'],
+                'memory': ['memory', 'ram', 'main memory', 'primary memory', 'dram', 'sram'],
+                
+                // OS concepts
+                'pages': ['page', 'pages', 'memory page', 'virtual page', 'page table', 'paging'],
+                'cpuscheduling': ['cpu scheduling', 'process scheduling', 'scheduler', 'cpu scheduler'],
+                'diskscheduling': ['disk scheduling', 'disk management', 'i/o scheduling', 'disk i/o'],
+                'pagereplacement': ['page replacement', 'memory management', 'virtual memory', 'page fault'],
+                'filesystem': ['file system', 'filesystem', 'fat', 'ntfs', 'ext4', 'inode', 'directory'],
+                'cache': ['cache', 'caching', 'memory cache', 'cpu cache', 'l1 cache', 'l2 cache'],
+                
+                // Visualization
+                'animation': ['animation', 'visualization', 'visualize', 'how to show', 'diagram'],
+                
+                // General concepts
+                'os': ['operating system', 'what is os', 'define os', 'os functions'],
+                'thread': ['thread', 'threads', 'what is thread', 'multithreading'],
+                'process': ['process', 'processes', 'what is process', 'process control block'],
+                'deadlock': ['deadlock', 'deadlock definition', 'deadlock prevention', 'deadlock avoidance'],
+                'kernel': ['kernel', 'what is kernel', 'kernel mode', 'microkernel', 'monolithic kernel'],
+                'interrupt': ['interrupt', 'what is interrupt', 'interrupt handler', 'isr'],
+                'semaphore': ['semaphore', 'mutex', 'synchronization', 'lock'],
+                'pipe': ['pipe', 'interprocess communication', 'ipc', 'unnamed pipe'],
+                'socket': ['socket', 'network socket', 'unix socket'],
+                'shell': ['shell', 'command line', 'terminal', 'bash', 'zsh'],
+                'swap': ['swap', 'swap space', 'virtual memory', 'paging file'],
+                'fragmentation': ['fragmentation', 'external fragmentation', 'internal fragmentation'],
+                'raid': ['raid', 'disk array', 'raid 0', 'raid 1', 'raid 5'],
+                'buffer': ['buffer', 'buffering', 'io buffer', 'buffer cache'],
+                'contextswitch': ['context switch', 'process switch', 'thread switch']
+            };
+        
+            for (const [def, keywords] of Object.entries(definitions)) {
+                if (keywords.some(keyword => message.includes(keyword))) {
+                    return def;
+                }
+            }
+            return null;
+        }
+        
+        function generateDefinition(definition) {
+            const definitions = {
+                // Hardware definitions
+                'cpu': '💻 The Central Processing Unit (CPU) is the "brain" of the computer that performs calculations and executes instructions. Key components:\n- ALU (Arithmetic Logic Unit)\n- Control Unit\n- Registers\n- Cache memory\n- Modern CPUs have multiple cores for parallel processing',
+                'disk': '💽 A disk is a storage device that stores data permanently using magnetic surfaces (HDD) or flash memory (SSD). Characteristics:\n- Non-volatile storage\n- Slower than RAM\n- Organized in sectors and tracks\n- Typical capacities: 256GB-10TB\n- SSDs have no moving parts and are faster',
+                'memory': '🧠 Memory (RAM) is temporary storage that the CPU uses for active programs and data. Features:\n- Volatile (loses data when powered off)\n- Much faster than disk (nanosecond access)\n- Measured in GB (typically 4GB-64GB)\n- Directly accessible by CPU\n- Types: DRAM (main), SRAM (cache)',
+                
+                // OS definitions
+                'pages': '📄 In operating systems, a page is a fixed-length block of memory (typically 4KB). Key points:\n- Virtual memory divided into pages\n- Physical memory divided into frames\n- Page tables map virtual to physical addresses\n- Enables memory protection and sharing\n- Page faults occur when needed page not in RAM',
+                'cpuscheduling': '⏱️ CPU scheduling determines which process runs next when multiple processes are ready. Goals:\n- Maximize CPU utilization\n- Ensure fairness\n- Minimize waiting time\n- Prevent starvation\n- Types: Preemptive vs Non-preemptive',
+                'diskscheduling': '💿 Disk scheduling manages the order of I/O requests to minimize:\n- Seek time (head movement)\n- Rotational latency\n- Maximize throughput\nCommon algorithms: FCFS, SCAN, C-SCAN, LOOK\nThroughput vs response time tradeoffs',
+                'pagereplacement': '🔄 Page replacement occurs when no free frames exist and a new page needs loading. Algorithms aim to:\n- Minimize page faults\n- Consider locality of reference\n- Avoid Belady\'s anomaly\nExamples: FIFO, LRU, Optimal, Clock\nImplemented using dirty bits and reference bits',
+                'filesystem': '🗂️ A file system organizes how data is stored on disk. Responsibilities:\n- File naming/storage\n- Directory structures\n- Access control\n- Space management\nExamples: NTFS, ext4, FAT32\nUses inodes or similar metadata structures',
+                'cache': '⚡ Cache is fast memory that stores frequently accessed data. Key aspects:\n- Smaller than main memory\n- Faster but more expensive\n- Uses locality principles (temporal/spatial)\n- Multiple levels (L1, L2, L3)\n- Cache coherence important for multicore',
+                
+                // Visualization
+                'animation': '🎬 Algorithm animation visually demonstrates how algorithms work. Benefits:\n- Helps understand complex processes\n- Shows step-by-step execution\n- Visualizes data structures\n- Demonstrates time/space complexity\n- Can show comparisons between algorithms',
+                
+                // General concepts
+                'os': '🖥️ An Operating System manages hardware and provides services. Core functions:\n- Process management\n- Memory management\n- File systems\n- Device control\n- User interface\n- Security/Protection\nExamples: Windows, Linux, macOS, Android\nTypes: Batch, Time-sharing, Real-time',
+                'thread': '🧵 A thread is a lightweight process sharing memory space. Characteristics:\n- Basic unit of CPU utilization\n- Shares code/data/files\n- Has own stack/registers\n- Enables parallelism\n- User threads vs kernel threads\n- Synchronization needed for shared data',
+                'process': '🔢 A process is a program in execution. Components:\n- Code (text section)\n- Data section\n- Heap (dynamic memory)\n- Stack (function calls)\n- Process Control Block (PCB)\nStates: New, Ready, Running, Waiting, Terminated',
+                'deadlock': '🔐 Deadlock occurs when processes wait indefinitely for resources held by others. Requirements:\n- Mutual exclusion\n- Hold and wait\n- No preemption\n- Circular wait\nSolutions: Prevention, Avoidance, Detection, Recovery\nBanker\'s algorithm for avoidance',
+                'kernel': '🌰 The kernel is the core OS component that:\n- Manages system resources\n- Handles hardware communication\n- Enforces security\n- Provides essential services\nTypes: Monolithic, Microkernel, Hybrid\nSystem calls interface with user programs',
+                'interrupt': '⏰ An interrupt signals the processor about events needing attention. Types:\n- Hardware (I/O completion)\n- Software (system calls)\n- Timer\n- Exception handling\nEnables multitasking\nUses interrupt vector table\nCan be masked or non-maskable',
+                'semaphore': '🚦 Semaphore is a synchronization tool that:\n- Controls access to shared resources\n- Uses wait() and signal() operations\n- Can be counting or binary (mutex)\n- Helps solve critical section problems\nMust avoid busy waiting',
+                'pipe': '🛢️ Pipe is an IPC mechanism that:\n- Creates unidirectional data channel\n- Used between related processes\n- Fixed size buffer\n- Uses producer-consumer model\nNamed pipes (FIFOs) exist in filesystem',
+                'socket': '🔌 Socket is an endpoint for communication that:\n- Enables network IPC\n- Identified by IP address + port\n- Types: Stream (TCP), Datagram (UDP)\n- Unix sockets for same-machine communication',
+                'shell': '🐚 Shell is a command-line interface that:\n- Acts as user interface to OS\n- Interprets user commands\n- Types: bash, zsh, PowerShell\n- Supports scripting\n- Uses environment variables',
+                'swap': '💱 Swap space is disk space used when:\n- Physical memory is full\n- Pages moved to disk (swapping)\n- Slower than RAM\n- Configurable size\n- Can affect system performance',
+                'fragmentation': '🧩 Fragmentation occurs when:\n- Memory becomes divided (external)\n- Allocated memory has unused space (internal)\n- Solved by compaction (external)\n- Affected by allocation strategy',
+                'raid': '🔮 RAID (Redundant Array of Independent Disks):\n- Combines multiple disks for performance/reliability\n- RAID 0: Striping (performance)\n- RAID 1: Mirroring (reliability)\n- RAID 5: Striping with parity\n- RAID 10: Mirroring + striping',
+                'buffer': '🛡️ Buffer is temporary storage that:\n- Holds data during transfers\n- Smooths speed differences\n- Can be in hardware or software\n- Used in I/O operations\nBuffer overflow is security concern',
+                'contextswitch': '🔄 Context switch is when CPU:\n- Saves state of current process\n- Loads state of new process\n- Involves registers, PC, stack\n- Overhead affects performance\n- Faster with thread switching'
+            };
+        
+            return definitions[definition] || 'I can explain various computer science concepts. What would you like to know?';
+        }
+        
+        function findRelevantAlgorithm(message) {
+            const algorithms = {
+                // CPU Scheduling
+                'fcfs': ['fcfs', 'first come first serve', 'fifo'],
+                'sjf': ['sjf', 'shortest job first', 'shortest'],
+                'rr': ['round robin', 'rr', 'time quantum'],
+                'priority': ['priority', 'priority scheduling'],
+                'multilevel': ['multilevel', 'multilevel queue'],
+                
+                // Disk Scheduling
+                'scan': ['scan', 'elevator', 'disk scan'],
+                'cscan': ['cscan', 'c-scan', 'circular scan'],
+                'look': ['look', 'look scheduling'],
+                'clook': ['clook', 'c-look'],
+                
+                // Page Replacement
+                'lru': ['lru', 'least recently used'],
+                'optimal': ['optimal', 'optimal page'],
+                'fifo': ['fifo page', 'first in first out page'],
+                'clock': ['clock', 'clock algorithm'],
+                
+                // Synchronization
+                'bankers': ['banker', 'banker\'s algorithm', 'deadlock avoidance'],
+                'dining': ['dining philosopher', 'dining philosophers'],
+                'peterson': ['peterson', 'peterson\'s solution'],
+                'bakery': ['bakery algorithm', 'lamport\'s bakery'],
+                
+                // Memory Management
+                'buddy': ['buddy system', 'buddy allocation'],
+                'slab': ['slab allocation', 'slab allocator'],
+                
+                // File Systems
+                'fat': ['fat', 'file allocation table'],
+                'inode': ['inode', 'inode based'],
+                
+                // Other
+                'dijkstra': ['dijkstra', 'dijkstra\'s algorithm'],
+                'bankers': ['banker', 'banker\'s algorithm'],
+                'readerwriter': ['reader writer', 'reader writer problem']
+            };
+        
+            for (const [algo, keywords] of Object.entries(algorithms)) {
+                if (keywords.some(keyword => message.includes(keyword))) {
+                    return algo;
+                }
+            }
+            return null;
+        }
+        
+        function generateAlgorithmExplanation(algorithm) {
+            const explanations = {
+                // CPU Scheduling
+                'fcfs': '⏳ First Come First Serve (FCFS):\n- Simplest scheduling algorithm\n- Processes execute in arrival order\n- Non-preemptive\n- Pros: Simple, fair\n- Cons: Convoy effect, poor for short processes\n- Average wait time often high',
+                'sjf': '⚡ Shortest Job First (SJF):\n- Executes process with shortest next CPU burst\n- Can be preemptive (SRTF) or non-preemptive\n- Pros: Minimal average waiting time\n- Cons: Starvation possible, burst time prediction needed\n- Optimal for minimizing wait time',
+                'rr': '🔄 Round Robin:\n- Each process gets time quantum (10-100ms)\n- Preempts if not finished in quantum\n- Pros: Fair, good for time-sharing\n- Cons: High context switch overhead with small quantum\n- Performance depends on quantum size',
+                'priority': '🏆 Priority Scheduling:\n- Processes executed by priority\n- Can be preemptive or non-preemptive\n- Pros: Important processes get attention\n- Cons: Starvation of low-priority processes\n- Aging can prevent starvation',
+                'multilevel': '📊 Multilevel Queue:\n- Multiple queues with different priorities\n- Each queue can have its own scheduling\n- Pros: Flexible, can prioritize system processes\n- Cons: Complex configuration needed\n- Often used with feedback',
+                
+                // Disk Scheduling
+                'scan': '📀 SCAN (Elevator):\n- Arm moves from one end to other, serving requests\n- Reverses direction at ends\n- Pros: Fair, no starvation\n- Cons: Long wait near opposite end\n- Services all requests in direction',
+                'cscan': '🔁 C-SCAN:\n- Arm moves in one direction only\n- Returns quickly to start when reaches end\n- Pros: More uniform wait time\n- Cons: Wasted movement on return\n- Treats disk as circular',
+                'look': '👀 LOOK:\n- Similar to SCAN but reverses at last request\n- Doesn\'t go to disk end\n- Pros: Less head movement\n- Cons: Slightly more complex\n- More efficient than SCAN',
+                'clook': '🔂 C-LOOK:\n- Like C-SCAN but reverses at last request\n- Circular version of LOOK\n- Pros: Efficient head movement\n- Cons: Complex implementation\n- Best for uniform workloads',
+                
+                // Page Replacement
+                'lru': '⏮️ Least Recently Used (LRU):\n- Replaces page not used for longest time\n- Approximates optimal algorithm\n- Pros: Good performance\n- Cons: Hard to implement perfectly\n- Often implemented with counters/stack',
+                'optimal': '🏅 Optimal Page Replacement:\n- Replaces page that won\'t be used longest\n- Theoretical benchmark\n- Pros: Minimum page faults\n- Cons: Impossible to implement (requires future knowledge)\n- Used for comparison',
+                'fifo': '➡️ FIFO:\n- Replaces oldest page in memory\n- Simple to implement\n- Pros: Easy to understand\n- Cons: Suffers Belady\'s anomaly\n- Poor in practice',
+                'clock': '🕒 Clock Algorithm:\n- Circular list of pages with reference bits\n- Second chance variant of FIFO\n- Pros: Reasonable performance\n- Cons: Not as good as LRU\n- Efficient implementation',
+                
+                // Synchronization
+                'bankers': '🏦 Banker\'s Algorithm:\n- Deadlock avoidance algorithm\n- Checks for safe state before allocation\n- Pros: Prevents deadlocks\n- Cons: Requires advance knowledge of max needs\n- Uses resource allocation graph',
+                'dining': '🍽️ Dining Philosophers:\n- Classic synchronization problem\n- Illustrates deadlock and solutions\n- Solutions: Resource hierarchy, arbitrator\n- Key challenge: Avoiding deadlock/starvation\n- Shows need for careful design',
+                'peterson': '🔐 Peterson\'s Solution:\n- Software solution to critical section problem\n- Works for two processes\n- Uses turn variable and interest flags\n- Pros: Simple, no hardware support needed\n- Proves mutual exclusion possible',
+                'bakery': '🍞 Bakery Algorithm:\n- Solves critical section for n processes\n- Assigns ticket numbers to processes\n- Pros: No starvation, fair\n- Cons: Ticket numbers can grow large\n- Like real bakery ticket system',
+                
+                // Memory Management
+                'buddy': '🤝 Buddy System:\n- Memory allocation algorithm\n- Divides memory into power-of-2 blocks\n- Pros: Fast coalescing\n- Cons: Internal fragmentation\n- Used in Linux kernel',
+                'slab': '🧱 Slab Allocation:\n- Allocates objects from caches\n- Reduces allocation overhead\n- Pros: Good for kernel objects\n- Cons: Complex\n- Used for frequent allocations',
+                
+                // File Systems
+                'fat': '📋 File Allocation Table (FAT):\n- Simple file system structure\n- Uses linked allocation with table\n- Pros: Simple, robust\n- Cons: Poor for large disks\n- FAT32 common for removable media',
+                'inode': '📇 Inode System:\n- Stores file metadata\n- Contains direct/indirect blocks\n- Pros: Efficient, enables hard links\n- Cons: More complex than FAT\n- Used in Unix/Linux',
+                
+                // Other
+                'dijkstra': '🛣️ Dijkstra\'s Algorithm:\n- Finds shortest path in graph\n- Uses greedy approach\n- Pros: Guaranteed optimal\n- Cons: Doesn\'t work with negative weights\n- O(E + V log V) with heap',
+                'readerwriter': '📚 Reader-Writer Problem:\n- Models database access patterns\n- Multiple readers or single writer\n- Solutions use semaphores/monitors\n- Starvation can be issue\n- Common in databases'
+            };
+        
+            return explanations[algorithm] || 'I can explain various algorithms. Which one interests you?';
+        }
+        
+        function addMessage(type, content) {
+            const messagesDiv = document.getElementById('chat-messages');
+            if (!messagesDiv) return;
+        
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageElement.innerHTML = `
+                <div class="message-content">
+                    <span class="message-text">${content}</span>
+                    <span class="message-time">${timestamp}</span>
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            messages.push({ type, content, timestamp });
+        }
+        
+        // Initialize chat functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input-field');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+            
+            // Add send button event listener
+            const sendButton = document.getElementById('send-button');
+            if (sendButton) {
+                sendButton.addEventListener('click', sendMessage);
+            }
+        });
+    </script>
+
+<script>
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login';
+            } else {
+                console.error('Logout failed');
+                alert('Logout failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('An error occurred during logout.');
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutButton = document.querySelector('.logout-nav');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleLogout();
+            });
+        }
+    });
+</script>
+
+    <script src="{{ url_for('static', filename='js/disk.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+</html>

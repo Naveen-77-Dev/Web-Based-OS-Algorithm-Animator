@@ -1,0 +1,468 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Details - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <style>
+        .otp-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="profile-container">
+            <div class="profile-form">
+                <h3>Enter Additional Details</h3>
+                <form onsubmit="saveDetails(event)">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="email-otp">Email OTP</label>
+                        <button type="button" onclick="sendOTP('email')">Send OTP</button>
+                        <div class="otp-container" id="email-otp-container">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number</label>
+                        <input type="text" id="mobile" placeholder="Enter your mobile number" required>
+                        <button type="button" onclick="sendOTP('mobile')">Send OTP</button>
+                        <div class="otp-container" id="mobile-otp-container">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                            <input type="text" class="otp-input" maxlength="1">
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load user details from localStorage
+        document.getElementById("name").value = localStorage.getItem("user_name");
+        document.getElementById("email").value = localStorage.getItem("user_email");
+
+        // Function to send OTP
+        function sendOTP(type) {
+            let otp = Math.floor(1000 + Math.random() * 9000);
+            alert(`${type.toUpperCase()} OTP: ${otp}`);
+            localStorage.setItem(`${type}_otp`, otp);
+        }
+
+        // Function to save details
+        function saveDetails(event) {
+            event.preventDefault();
+            const mobile = document.getElementById("mobile").value;
+
+            // Get OTP values correctly
+            const enteredEmailOTP = Array.from(document.querySelectorAll("#email-otp-container .otp-input"))
+                .map(input => input.value).join('');
+            const enteredMobileOTP = Array.from(document.querySelectorAll("#mobile-otp-container .otp-input"))
+                .map(input => input.value).join('');
+
+            // Validate OTPs
+            if (enteredMobileOTP !== localStorage.getItem("mobile_otp") || enteredEmailOTP !== localStorage.getItem("email_otp")) {
+                alert("Invalid OTP!");
+                return;
+            }
+
+            // Save mobile number
+            localStorage.setItem("user_mobile", mobile);
+            alert("Details saved successfully!");
+            window.location.href = "profile.html";
+        }
+
+        // Auto move to next input for OTP fields
+        document.querySelectorAll(".otp-input").forEach((input, index, inputs) => {
+            input.addEventListener("input", (event) => {
+                if (!/^\d$/.test(event.data)) {
+                    input.value = ""; // Allow only digits
+                    return;
+                }
+                if (event.inputType !== "deleteContentBackward" && input.value) {
+                    if (index < inputs.length - 1) inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener("keydown", (event) => {
+                if (event.key === "Backspace" && input.value === "" && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Details - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <main>
+        <div class="profile-container">
+            <div class="profile-form">
+                <h3>Enter Additional Details</h3>
+                <form method="POST" action="/newdetails.html">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile Number</label>
+                        <input type="number" id="mobile" placeholder="Enter your mobile number" required>
+                    </div>
+                    <div class="question-box">
+                        <div class="form-group">
+                            <label for="securityquestion">Select a Security Question</label>
+                        <select id="questionSelect" onchange="showOptions()">
+                            <option value="">-- Select a Question --</option>
+                            <option value="q1">What was the name of your first pet?</option>
+                            <option value="q2">What is the name of the city where you were born?</option>
+                            <option value="q3">What was the model of your first car?</option>
+                            <option value="q4">What is your mother’s maiden name?</option>
+                            <option value="q5">What was the name of your first school?</option>
+                            <option value="q6">What was your First Crush Name?</option>
+                        </select></div><br>
+                        <div class="form-group">
+                        <input type="text" id="Answer" placeholder="Enter your Answer" required></div><br>
+                       
+                    </div>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load user details from localStorage
+        document.getElementById("name").value = localStorage.getItem("user_name");
+        document.getElementById("email").value = localStorage.getItem("user_email");
+
+        // Function to send OTP
+        function sendOTP(type) {
+            const email = document.getElementById('email').value; // Get the email from the input field
+            const mobile = document.getElementById('mobile').value; // Get the mobile number from the input field
+
+            // Create a JSON object to send data
+            const data = {
+                email: email,
+                mobile: mobile
+            };
+
+            // Send the OTP request to the server
+            fetch('/send_otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data) // Convert the data to JSON
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.text(); // Get the response text
+            })
+            .then(data => {
+                alert(data); // Show the response message (e.g., "OTPs sent!")
+            })
+            .catch(error => {
+                console.error('Error:', error); // Log any errors
+                alert('Failed to send OTP. Please try again.'); // Show an error message
+            });
+        }
+
+        // Auto move to next input for OTP fields
+        document.querySelectorAll(".otp-input").forEach((input, index, inputs) => {
+            input.addEventListener("input", (event) => {
+                if (!/^\d$/.test(event.data)) {
+                    input.value = ""; // Allow only digits
+                    return;
+                }
+                if (event.inputType !== "deleteContentBackward" && input.value) {
+                    if (index < inputs.length - 1) inputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener("keydown", (event) => {
+                if (event.key === "Backspace" && input.value === "" && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">OS Algorithm Visualizer</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="login.html">Login</a>
+            <a href="register.html">Register</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="profile-container">
+            <!-- Flash messages 
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h2>Complete Your Profile</h2>
+            <form method="POST" action="/save-details">
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit mobile number" 
+                           pattern="[0-9]{10}" title="10 digit mobile number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="security_question">Security Question</label>
+                    <select id="security_question" name="security_question" required>
+                        <option value="">-- Select a Question --</option>
+                        <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                        <option value="What is the name of the city where you were born?">What is the name of the city where you were born?</option>
+                        <option value="What was the model of your first car?">What was the model of your first car?</option>
+                        <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                        <option value="What was the name of your first school?">What was the name of your first school?</option>
+                        <option value="What was your First Crush Name?">What was your First Crush Name?</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="security_answer">Your Answer</label>
+                    <input type="text" id="security_answer" name="security_answer" 
+                           placeholder="Enter your answer" minlength="2" required>
+                </div>
+                
+                <button type="submit">Save Details</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+          <div class="nav-brand">OS Algorithm Visualizer</div>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="profile-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <h2>Complete Your Profile</h2>
+            <form method="POST" action="/newdetails">
+                <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel" id="mobile" name="mobile" placeholder="Enter 10-digit mobile number" 
+                           pattern="[0-9]{10}" title="10 digit mobile number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="security_question">Security Question</label>
+                    <select id="security_question" name="security_question" required>
+                        <option value="">-- Select a Question --</option>
+                        <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                        <option value="What is the name of the city where you were born?">What is the name of the city where you were born?</option>
+                        <option value="What was the model of your first car?">What was the model of your first car?</option>
+                        <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                        <option value="What was the name of your first school?">What was the name of your first school?</option>
+                        <option value="What was your First Crush Name?">What was your First Crush Name?</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="security_answer">Your Answer</label>
+                    <input type="text" id="security_answer" name="security_answer" 
+                           placeholder="Enter your answer" minlength="2" required>
+                </div>
+                
+                <button type="submit">Save Details</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+    </footer>
+</body>
+</html>

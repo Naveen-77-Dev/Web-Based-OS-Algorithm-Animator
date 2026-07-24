@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - OS Algorithm Visualizer</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <style>
+        /* Profile Button Styles */
+    .profile-button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 1rem;
+    }
+    
+    .profile-button {
+        width: 40px;  /* Smaller size for nav bar */
+        height: 40px;
+        border-radius: 50%;
+        background: orangered;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-button:hover {
+        transform: scale(1.1);
+        background: rgba(200, 90, 0, 0.996);
+    }
+    
+    .profile-text {
+        font-size: 0.7rem;
+        margin-top: 0.3rem;
+        color: white;
+        text-align: center;
+    }
+ 
+/*.nav-brand{
+    align-items: start;
+    justify-self: start;
+} */
+    </style>
+
+<nav class="navbar">
+    <div class="navbar-left">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="navbar-logo">
+      <div class="nav-brand">OS Algorithm Visualizer</div>
+    </div>
+    <div class="nav-links">
+      <a href="home.html" class="active">Home</a>
+      <a href="cpu.html">CPU Scheduling</a>
+      <a href="disk.html">Disk Scheduling</a>
+      <a href="page.html">Page Replacement</a>
+      <a href="contactal.html">Contact</a>
+      <a href="#" onclick="handleLogout()" class="logout-nav">Logout</a>
+    </div>
+  </nav>
+  
+
+    <main>
+        <section class="hero">
+            <h1>Welcome to OS Algorithm Visualizer</h1>
+            <p>Interactive visualization of CPU Scheduling, Disk Scheduling, and Page Replacement Algorithms</p>
+        </section>
+
+        <!-- <div class="user-dashboard">
+            <div class="user-profile-header" onclick="toggleUserProfile()">
+                <h3>User Information <span class="toggle-icon">▶</span></h3>
+            </div>
+            <div class="user-profile" id="user-profile-section">
+                <div class="profile-section">
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <span class="info-label">Name:</span>
+                            <span id="user-name">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span id="user-email">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Mobile:</span>
+                            <span id="user-mobile">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Member Since:</span>
+                            <span id="user-joined">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <section class="os-info">
+            <h1>What Is OS?</h1>
+            <p>An Operating System (OS) is system software that manages hardware and software resources on a computer. It provides a user interface and serves as a bridge between the user and the computer hardware. The OS manages various tasks such as memory management, process management, device management, file management, and security.
+            </p>
+            <h3><i>Key functions of an OS:</i></h3>
+        <ul>
+            <li>Process Management</li>
+            <li>Memory Management</li>
+            <li>Device Management</li>
+            <li>File Management</li>
+            <li>Security & Access conttrols Management</li>
+            <li>User Interface Management</li>
+        </ul>
+            <h1>Understanding OS Scheduling Problems</h1>
+            <p>Operating System scheduling involves managing resources like the CPU, Disk, and Page Replacement. CPU scheduling allocates processor time to processes efficiently, while disk scheduling optimizes I/O operations to reduce access times. Page replacement ensures that memory is used effectively by deciding which pages to swap in and out of physical memory. These processes aim to improve system performance, fairness, and resource utilization.</p>
+            <ul>
+                <li><b><i>CPU Scheduling :</i></b> Allocates processor time to processes, ensuring efficient multitasking and minimizing issues like starvation and context-switching overhead.
+                </li>
+                <li><b><i>Disk Scheduling :</i></b> Optimizes the order of disk I/O operations to reduce seek time and improve system throughput.</li>
+              <li><b><i>Page Replacement :</i></b> Manages memory by deciding which pages to swap in and out of physical memory to reduce page faults and optimize memory usage.</li>
+            </ul>
+            
+            <h1>Why is OS Scheduling Important?</h1>
+            <p>OS scheduling is important because it ensures efficient use of system resources, such as the CPU, memory, and disk, by determining the order in which tasks are executed. Proper scheduling improves system performance, responsiveness, and fairness, allowing multiple processes to run smoothly without resource conflicts or inefficiencies. It helps manage workloads, prevent issues like starvation and deadlocks, and ensures that the system remains stable and responsive to user needs.</p>
+            </ul>
+            <br>
+            
+
+        </br>
+            <h1>The Main Algorithms are:</h1>
+        </section>
+
+        <section class="algorithms">
+            <div class="algorithm-card" onclick="window.location.href='cpu.html'">
+                <img src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?auto=format&fit=crop&w=600" alt="CPU">
+                <h2>CPU Scheduling</h2>
+                <p>Visualize FCFS, SJF, Round Robin, and Priority Scheduling</p>
+            </div>
+
+            <div class="algorithm-card" onclick="window.location.href='disk.html'">
+                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=600" alt="Disk">
+                <h2>Disk Scheduling</h2>
+                <p>Explore FCFS, SCAN, C-SCAN, and LOOK algorithms</p>
+            </div>
+
+            <div class="algorithm-card" onclick="window.location.href='page.html'">
+                <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=600" alt="Page">
+                <h2>Page Replacement</h2>
+                <p>Understand FIFO, LRU, and Optimal replacement</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-header" onclick="toggleChat()">
+            <span>💬</span>
+            <span class="help-text">Need Help?</span>
+        </div>
+        <div class="chat-body">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-input-field" placeholder="Type your question..." autocomplete="off">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        
+        // This should be replaced with your actual user data fetching logic
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Get user's name (replace with your actual implementation)
+        const userName = "User"; // Default value
+        // Try to get from localStorage or fetch from server
+        const storedName = localStorage.getItem('userName') || userName;
+        
+        // Get first letter
+        const firstLetter = storedName.charAt(0).toUpperCase();
+        document.getElementById('first-letter').textContent = firstLetter;
+        
+        // If you need to fetch from server:
+        /*
+        fetch('/api/user')
+            .then(response => response.json())
+            .then(data => {
+                const firstLetter = data.name.charAt(0).toUpperCase();
+                document.getElementById('first-letter').textContent = firstLetter;
+                localStorage.setItem('userName', data.name);
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                document.getElementById('first-letter').textContent = 'U';
+            });
+        */
+    });
+      </script>
+<script>// Handle logout functionality
+    function handleLogout() {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin' // Important for session cookies
+        })
+        .then(response => {
+            if (response.ok) {
+                // Clear any client-side storage if needed
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Redirect to login page
+                window.location.href = '/login';
+            } else {
+                console.error('Logout failed');
+                alert('Logout failed. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during logout:', error);
+            alert('An error occurred during logout.');
+        });
+    }
+    
+    // Add event listener for logout button
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutButton = document.querySelector('.logout-nav');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleLogout();
+            });
+        }
+    });</script>
+
+<script>
+    //chat js
+    let messages = [];
+    let aiContext = null;
+    let firstMessageSent = false;
+    
+    function toggleChat() {
+        const chatWidget = document.querySelector('.chat-widget');
+        chatWidget.classList.toggle('expanded');
+        
+        if (chatWidget.classList.contains('expanded') && !firstMessageSent) {
+            addMessage('bot', 'Hello! I\'m your OS and algorithms assistant. Ask me about: CPU, memory, disks, scheduling, animations, or any OS concept! 😊');
+            firstMessageSent = true;
+        }
+    }
+    
+    function sendMessage() {
+        const input = document.getElementById('chat-input-field');
+        if (!input) return;
+        
+        const message = input.value.trim();
+        if (message) {
+            addMessage('user', message);
+            processUserMessage(message);
+            input.value = '';
+        }
+    }
+    
+    function processUserMessage(message) {
+        message = message.toLowerCase();
+        
+        // Goodbye response
+        if (message.match(/^(bye|goodbye|see you|quit|exit)/i)) {
+            setTimeout(() => {
+                addMessage('bot', 'Thank you for chatting with me! If you have more OS or algorithm questions later, I\'ll be here. Have a great day! 👋');
+            }, 500);
+            return;
+        }
+        
+        // Greeting response
+        if (message.match(/^(hi|hello|hey|greetings)/i)) {
+            setTimeout(() => {
+                addMessage('bot', 'Hello! I can explain:\n- Computer hardware (CPU, disk, memory)\n- OS concepts (scheduling, paging)\n- Algorithm animations\n- And much more! What would you like to know?');
+            }, 500);
+            return;
+        }
+        
+        // Handle definitions
+        const definitionMatch = findRelevantDefinition(message);
+        if (definitionMatch) {
+            setTimeout(() => {
+                addMessage('bot', generateDefinition(definitionMatch));
+                if (shouldOfferExamples(definitionMatch)) {
+                    addMessage('bot', 'Would you like examples or specific algorithms related to this?');
+                }
+            }, 500);
+            return;
+        }
+    
+        // Algorithm explanations
+        const algorithmMatch = findRelevantAlgorithm(message);
+        if (algorithmMatch) {
+            setTimeout(() => {
+                addMessage('bot', generateAlgorithmExplanation(algorithmMatch));
+                addMessage('bot', 'Would you like to know how this works in animation or visualization?');
+            }, 500);
+            return;
+        }
+    
+        // Default fallback
+        setTimeout(() => {
+            addMessage('bot', 'I\'m not entirely sure about that concept yet, but I\'ll work on learning it! 😊');
+            addMessage('bot', 'I can explain:\n- Hardware: CPU, Disk, Memory\n- OS: Scheduling, Paging, File Systems\n- Algorithms: FCFS, LRU, SCAN\n- Animations: How algorithms are visualized');
+        }, 500);
+    }
+    
+    function shouldOfferExamples(definition) {
+        return ['disk', 'pages', 'memory', 'scheduling', 'animation', 'process', 'thread', 'filesystem', 'deadlock'].includes(definition);
+    }
+    
+    function findRelevantDefinition(message) {
+        const definitions = {
+            // Hardware concepts
+            'cpu': ['cpu', 'central processing unit', 'processor', 'cores', 'multicore'],
+            'disk': ['disk', 'hard disk', 'hdd', 'ssd', 'storage device', 'hard drive'],
+            'memory': ['memory', 'ram', 'main memory', 'primary memory', 'dram', 'sram'],
+            
+            // OS concepts
+            'pages': ['page', 'pages', 'memory page', 'virtual page', 'page table', 'paging'],
+            'cpuscheduling': ['cpu scheduling', 'process scheduling', 'scheduler', 'cpu scheduler'],
+            'diskscheduling': ['disk scheduling', 'disk management', 'i/o scheduling', 'disk i/o'],
+            'pagereplacement': ['page replacement', 'memory management', 'virtual memory', 'page fault'],
+            'filesystem': ['file system', 'filesystem', 'fat', 'ntfs', 'ext4', 'inode', 'directory'],
+            'cache': ['cache', 'caching', 'memory cache', 'cpu cache', 'l1 cache', 'l2 cache'],
+            
+            // Visualization
+            'animation': ['animation', 'visualization', 'visualize', 'how to show', 'diagram'],
+            
+            // General concepts
+            'os': ['operating system', 'what is os', 'define os', 'os functions'],
+            'thread': ['thread', 'threads', 'what is thread', 'multithreading'],
+            'process': ['process', 'processes', 'what is process', 'process control block'],
+            'deadlock': ['deadlock', 'deadlock definition', 'deadlock prevention', 'deadlock avoidance'],
+            'kernel': ['kernel', 'what is kernel', 'kernel mode', 'microkernel', 'monolithic kernel'],
+            'interrupt': ['interrupt', 'what is interrupt', 'interrupt handler', 'isr'],
+            'semaphore': ['semaphore', 'mutex', 'synchronization', 'lock'],
+            'pipe': ['pipe', 'interprocess communication', 'ipc', 'unnamed pipe'],
+            'socket': ['socket', 'network socket', 'unix socket'],
+            'shell': ['shell', 'command line', 'terminal', 'bash', 'zsh'],
+            'swap': ['swap', 'swap space', 'virtual memory', 'paging file'],
+            'fragmentation': ['fragmentation', 'external fragmentation', 'internal fragmentation'],
+            'raid': ['raid', 'disk array', 'raid 0', 'raid 1', 'raid 5'],
+            'buffer': ['buffer', 'buffering', 'io buffer', 'buffer cache'],
+            'contextswitch': ['context switch', 'process switch', 'thread switch']
+        };
+    
+        for (const [def, keywords] of Object.entries(definitions)) {
+            if (keywords.some(keyword => message.includes(keyword))) {
+                return def;
+            }
+        }
+        return null;
+    }
+    
+    function generateDefinition(definition) {
+        const definitions = {
+            // Hardware definitions
+            'cpu': '💻 The Central Processing Unit (CPU) is the "brain" of the computer that performs calculations and executes instructions. Key components:\n- ALU (Arithmetic Logic Unit)\n- Control Unit\n- Registers\n- Cache memory\n- Modern CPUs have multiple cores for parallel processing',
+            'disk': '💽 A disk is a storage device that stores data permanently using magnetic surfaces (HDD) or flash memory (SSD). Characteristics:\n- Non-volatile storage\n- Slower than RAM\n- Organized in sectors and tracks\n- Typical capacities: 256GB-10TB\n- SSDs have no moving parts and are faster',
+            'memory': '🧠 Memory (RAM) is temporary storage that the CPU uses for active programs and data. Features:\n- Volatile (loses data when powered off)\n- Much faster than disk (nanosecond access)\n- Measured in GB (typically 4GB-64GB)\n- Directly accessible by CPU\n- Types: DRAM (main), SRAM (cache)',
+            
+            // OS definitions
+            'pages': '📄 In operating systems, a page is a fixed-length block of memory (typically 4KB). Key points:\n- Virtual memory divided into pages\n- Physical memory divided into frames\n- Page tables map virtual to physical addresses\n- Enables memory protection and sharing\n- Page faults occur when needed page not in RAM',
+            'cpuscheduling': '⏱️ CPU scheduling determines which process runs next when multiple processes are ready. Goals:\n- Maximize CPU utilization\n- Ensure fairness\n- Minimize waiting time\n- Prevent starvation\n- Types: Preemptive vs Non-preemptive',
+            'diskscheduling': '💿 Disk scheduling manages the order of I/O requests to minimize:\n- Seek time (head movement)\n- Rotational latency\n- Maximize throughput\nCommon algorithms: FCFS, SCAN, C-SCAN, LOOK\nThroughput vs response time tradeoffs',
+            'pagereplacement': '🔄 Page replacement occurs when no free frames exist and a new page needs loading. Algorithms aim to:\n- Minimize page faults\n- Consider locality of reference\n- Avoid Belady\'s anomaly\nExamples: FIFO, LRU, Optimal, Clock\nImplemented using dirty bits and reference bits',
+            'filesystem': '🗂️ A file system organizes how data is stored on disk. Responsibilities:\n- File naming/storage\n- Directory structures\n- Access control\n- Space management\nExamples: NTFS, ext4, FAT32\nUses inodes or similar metadata structures',
+            'cache': '⚡ Cache is fast memory that stores frequently accessed data. Key aspects:\n- Smaller than main memory\n- Faster but more expensive\n- Uses locality principles (temporal/spatial)\n- Multiple levels (L1, L2, L3)\n- Cache coherence important for multicore',
+            
+            // Visualization
+            'animation': '🎬 Algorithm animation visually demonstrates how algorithms work. Benefits:\n- Helps understand complex processes\n- Shows step-by-step execution\n- Visualizes data structures\n- Demonstrates time/space complexity\n- Can show comparisons between algorithms',
+            
+            // General concepts
+            'os': '🖥️ An Operating System manages hardware and provides services. Core functions:\n- Process management\n- Memory management\n- File systems\n- Device control\n- User interface\n- Security/Protection\nExamples: Windows, Linux, macOS, Android\nTypes: Batch, Time-sharing, Real-time',
+            'thread': '🧵 A thread is a lightweight process sharing memory space. Characteristics:\n- Basic unit of CPU utilization\n- Shares code/data/files\n- Has own stack/registers\n- Enables parallelism\n- User threads vs kernel threads\n- Synchronization needed for shared data',
+            'process': '🔢 A process is a program in execution. Components:\n- Code (text section)\n- Data section\n- Heap (dynamic memory)\n- Stack (function calls)\n- Process Control Block (PCB)\nStates: New, Ready, Running, Waiting, Terminated',
+            'deadlock': '🔐 Deadlock occurs when processes wait indefinitely for resources held by others. Requirements:\n- Mutual exclusion\n- Hold and wait\n- No preemption\n- Circular wait\nSolutions: Prevention, Avoidance, Detection, Recovery\nBanker\'s algorithm for avoidance',
+            'kernel': '🌰 The kernel is the core OS component that:\n- Manages system resources\n- Handles hardware communication\n- Enforces security\n- Provides essential services\nTypes: Monolithic, Microkernel, Hybrid\nSystem calls interface with user programs',
+            'interrupt': '⏰ An interrupt signals the processor about events needing attention. Types:\n- Hardware (I/O completion)\n- Software (system calls)\n- Timer\n- Exception handling\nEnables multitasking\nUses interrupt vector table\nCan be masked or non-maskable',
+            'semaphore': '🚦 Semaphore is a synchronization tool that:\n- Controls access to shared resources\n- Uses wait() and signal() operations\n- Can be counting or binary (mutex)\n- Helps solve critical section problems\nMust avoid busy waiting',
+            'pipe': '🛢️ Pipe is an IPC mechanism that:\n- Creates unidirectional data channel\n- Used between related processes\n- Fixed size buffer\n- Uses producer-consumer model\nNamed pipes (FIFOs) exist in filesystem',
+            'socket': '🔌 Socket is an endpoint for communication that:\n- Enables network IPC\n- Identified by IP address + port\n- Types: Stream (TCP), Datagram (UDP)\n- Unix sockets for same-machine communication',
+            'shell': '🐚 Shell is a command-line interface that:\n- Acts as user interface to OS\n- Interprets user commands\n- Types: bash, zsh, PowerShell\n- Supports scripting\n- Uses environment variables',
+            'swap': '💱 Swap space is disk space used when:\n- Physical memory is full\n- Pages moved to disk (swapping)\n- Slower than RAM\n- Configurable size\n- Can affect system performance',
+            'fragmentation': '🧩 Fragmentation occurs when:\n- Memory becomes divided (external)\n- Allocated memory has unused space (internal)\n- Solved by compaction (external)\n- Affected by allocation strategy',
+            'raid': '🔮 RAID (Redundant Array of Independent Disks):\n- Combines multiple disks for performance/reliability\n- RAID 0: Striping (performance)\n- RAID 1: Mirroring (reliability)\n- RAID 5: Striping with parity\n- RAID 10: Mirroring + striping',
+            'buffer': '🛡️ Buffer is temporary storage that:\n- Holds data during transfers\n- Smooths speed differences\n- Can be in hardware or software\n- Used in I/O operations\nBuffer overflow is security concern',
+            'contextswitch': '🔄 Context switch is when CPU:\n- Saves state of current process\n- Loads state of new process\n- Involves registers, PC, stack\n- Overhead affects performance\n- Faster with thread switching'
+        };
+    
+        return definitions[definition] || 'I can explain various computer science concepts. What would you like to know?';
+    }
+    
+    function findRelevantAlgorithm(message) {
+        const algorithms = {
+            // CPU Scheduling
+            'fcfs': ['fcfs', 'first come first serve', 'fifo'],
+            'sjf': ['sjf', 'shortest job first', 'shortest'],
+            'rr': ['round robin', 'rr', 'time quantum'],
+            'priority': ['priority', 'priority scheduling'],
+            'multilevel': ['multilevel', 'multilevel queue'],
+            
+            // Disk Scheduling
+            'scan': ['scan', 'elevator', 'disk scan'],
+            'cscan': ['cscan', 'c-scan', 'circular scan'],
+            'look': ['look', 'look scheduling'],
+            'clook': ['clook', 'c-look'],
+            
+            // Page Replacement
+            'lru': ['lru', 'least recently used'],
+            'optimal': ['optimal', 'optimal page'],
+            'fifo': ['fifo page', 'first in first out page'],
+            'clock': ['clock', 'clock algorithm'],
+            
+            // Synchronization
+            'bankers': ['banker', 'banker\'s algorithm', 'deadlock avoidance'],
+            'dining': ['dining philosopher', 'dining philosophers'],
+            'peterson': ['peterson', 'peterson\'s solution'],
+            'bakery': ['bakery algorithm', 'lamport\'s bakery'],
+            
+            // Memory Management
+            'buddy': ['buddy system', 'buddy allocation'],
+            'slab': ['slab allocation', 'slab allocator'],
+            
+            // File Systems
+            'fat': ['fat', 'file allocation table'],
+            'inode': ['inode', 'inode based'],
+            
+            // Other
+            'dijkstra': ['dijkstra', 'dijkstra\'s algorithm'],
+            'bankers': ['banker', 'banker\'s algorithm'],
+            'readerwriter': ['reader writer', 'reader writer problem']
+        };
+    
+        for (const [algo, keywords] of Object.entries(algorithms)) {
+            if (keywords.some(keyword => message.includes(keyword))) {
+                return algo;
+            }
+        }
+        return null;
+    }
+    
+    function generateAlgorithmExplanation(algorithm) {
+        const explanations = {
+            // CPU Scheduling
+            'fcfs': '⏳ First Come First Serve (FCFS):\n- Simplest scheduling algorithm\n- Processes execute in arrival order\n- Non-preemptive\n- Pros: Simple, fair\n- Cons: Convoy effect, poor for short processes\n- Average wait time often high',
+            'sjf': '⚡ Shortest Job First (SJF):\n- Executes process with shortest next CPU burst\n- Can be preemptive (SRTF) or non-preemptive\n- Pros: Minimal average waiting time\n- Cons: Starvation possible, burst time prediction needed\n- Optimal for minimizing wait time',
+            'rr': '🔄 Round Robin:\n- Each process gets time quantum (10-100ms)\n- Preempts if not finished in quantum\n- Pros: Fair, good for time-sharing\n- Cons: High context switch overhead with small quantum\n- Performance depends on quantum size',
+            'priority': '🏆 Priority Scheduling:\n- Processes executed by priority\n- Can be preemptive or non-preemptive\n- Pros: Important processes get attention\n- Cons: Starvation of low-priority processes\n- Aging can prevent starvation',
+            'multilevel': '📊 Multilevel Queue:\n- Multiple queues with different priorities\n- Each queue can have its own scheduling\n- Pros: Flexible, can prioritize system processes\n- Cons: Complex configuration needed\n- Often used with feedback',
+            
+            // Disk Scheduling
+            'scan': '📀 SCAN (Elevator):\n- Arm moves from one end to other, serving requests\n- Reverses direction at ends\n- Pros: Fair, no starvation\n- Cons: Long wait near opposite end\n- Services all requests in direction',
+            'cscan': '🔁 C-SCAN:\n- Arm moves in one direction only\n- Returns quickly to start when reaches end\n- Pros: More uniform wait time\n- Cons: Wasted movement on return\n- Treats disk as circular',
+            'look': '👀 LOOK:\n- Similar to SCAN but reverses at last request\n- Doesn\'t go to disk end\n- Pros: Less head movement\n- Cons: Slightly more complex\n- More efficient than SCAN',
+            'clook': '🔂 C-LOOK:\n- Like C-SCAN but reverses at last request\n- Circular version of LOOK\n- Pros: Efficient head movement\n- Cons: Complex implementation\n- Best for uniform workloads',
+            
+            // Page Replacement
+            'lru': '⏮️ Least Recently Used (LRU):\n- Replaces page not used for longest time\n- Approximates optimal algorithm\n- Pros: Good performance\n- Cons: Hard to implement perfectly\n- Often implemented with counters/stack',
+            'optimal': '🏅 Optimal Page Replacement:\n- Replaces page that won\'t be used longest\n- Theoretical benchmark\n- Pros: Minimum page faults\n- Cons: Impossible to implement (requires future knowledge)\n- Used for comparison',
+            'fifo': '➡️ FIFO:\n- Replaces oldest page in memory\n- Simple to implement\n- Pros: Easy to understand\n- Cons: Suffers Belady\'s anomaly\n- Poor in practice',
+            'clock': '🕒 Clock Algorithm:\n- Circular list of pages with reference bits\n- Second chance variant of FIFO\n- Pros: Reasonable performance\n- Cons: Not as good as LRU\n- Efficient implementation',
+            
+            // Synchronization
+            'bankers': '🏦 Banker\'s Algorithm:\n- Deadlock avoidance algorithm\n- Checks for safe state before allocation\n- Pros: Prevents deadlocks\n- Cons: Requires advance knowledge of max needs\n- Uses resource allocation graph',
+            'dining': '🍽️ Dining Philosophers:\n- Classic synchronization problem\n- Illustrates deadlock and solutions\n- Solutions: Resource hierarchy, arbitrator\n- Key challenge: Avoiding deadlock/starvation\n- Shows need for careful design',
+            'peterson': '🔐 Peterson\'s Solution:\n- Software solution to critical section problem\n- Works for two processes\n- Uses turn variable and interest flags\n- Pros: Simple, no hardware support needed\n- Proves mutual exclusion possible',
+            'bakery': '🍞 Bakery Algorithm:\n- Solves critical section for n processes\n- Assigns ticket numbers to processes\n- Pros: No starvation, fair\n- Cons: Ticket numbers can grow large\n- Like real bakery ticket system',
+            
+            // Memory Management
+            'buddy': '🤝 Buddy System:\n- Memory allocation algorithm\n- Divides memory into power-of-2 blocks\n- Pros: Fast coalescing\n- Cons: Internal fragmentation\n- Used in Linux kernel',
+            'slab': '🧱 Slab Allocation:\n- Allocates objects from caches\n- Reduces allocation overhead\n- Pros: Good for kernel objects\n- Cons: Complex\n- Used for frequent allocations',
+            
+            // File Systems
+            'fat': '📋 File Allocation Table (FAT):\n- Simple file system structure\n- Uses linked allocation with table\n- Pros: Simple, robust\n- Cons: Poor for large disks\n- FAT32 common for removable media',
+            'inode': '📇 Inode System:\n- Stores file metadata\n- Contains direct/indirect blocks\n- Pros: Efficient, enables hard links\n- Cons: More complex than FAT\n- Used in Unix/Linux',
+            
+            // Other
+            'dijkstra': '🛣️ Dijkstra\'s Algorithm:\n- Finds shortest path in graph\n- Uses greedy approach\n- Pros: Guaranteed optimal\n- Cons: Doesn\'t work with negative weights\n- O(E + V log V) with heap',
+            'readerwriter': '📚 Reader-Writer Problem:\n- Models database access patterns\n- Multiple readers or single writer\n- Solutions use semaphores/monitors\n- Starvation can be issue\n- Common in databases'
+        };
+    
+        return explanations[algorithm] || 'I can explain various algorithms. Which one interests you?';
+    }
+    
+    function addMessage(type, content) {
+        const messagesDiv = document.getElementById('chat-messages');
+        if (!messagesDiv) return;
+    
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', type);
+        
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageElement.innerHTML = `
+            <div class="message-content">
+                <span class="message-text">${content}</span>
+                <span class="message-time">${timestamp}</span>
+            </div>
+        `;
+        
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        messages.push({ type, content, timestamp });
+    }
+    
+    // Initialize chat functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const chatInput = document.getElementById('chat-input-field');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        
+        // Add send button event listener
+        const sendButton = document.getElementById('send-button');
+        if (sendButton) {
+            sendButton.addEventListener('click', sendMessage);
+        }
+    });
+</script>
+
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</body>
+<footer class="footer">
+    <p>&copy; 2025 OS Algorithm Visualizer. All rights reserved.</p>
+</footer>
+</html>
